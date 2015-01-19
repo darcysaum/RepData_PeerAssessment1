@@ -8,18 +8,69 @@ output:
 
 ## Loading and preprocessing the data
 
+First, I'm just going to load the data and leave it as is for now.
+
+```{r echo=TRUE}
+actvt <- read.csv("activity.csv")
+```
+
+We loaded `r nrow(actvt)` rows. 
 
 
 ## What is mean total number of steps taken per day?
 
+I'm creating a sum aggregate of steps by day.
+```{r echo=TRUE}
+by_day <- aggregate(actvt$steps, list(date=actvt$date), sum)
+```
+
+### Histogram
+And then I'm displaying it as histogram.
+```{r echo=TRUE}
+hist(by_day$x, breaks=23, main="Daily Steps", xlab="Steps")
+```
+
+### Mean & Median
+```{r}
+steps_mean <- round(mean(by_day$x, na.rm=TRUE),2)
+steps_median <- median(by_day$x, na.rm=TRUE)
+print(paste("mean steps per day: ", steps_mean))
+print(paste("median steps per day: ", steps_median ))
+```
 
 
 ## What is the average daily activity pattern?
 
+I'm aggregating using the mean per interval and then plotting.
+```{r echo=TRUE}
+interval_steps = aggregate(actvt$steps, list(as.factor(actvt$interval)), mean, na.rm=TRUE)
+plot(interval_steps, type="l", ylab="Average steps", xlab="Interval")
+```
+
+Find the interval with the highest average steps
+```{r}
+h_interval <- interval_steps[which.max(interval_steps$x),]
+```
+
+The interval with the highest number of steps is `r as.numeric(as.character(h_interval$Group.1))` with an average of `r round(h_interval$x,2)`
 
 
 ## Imputing missing values
 
+### Find rows with missing values:
+```{r}
+missing <- nrow(actvt[which(is.na(actvt$steps)),])
+```
+
+There are `r missing` rows with missing values.
+
+I'm going to assign to each missing value the mean for that interval. I can rely on the `interval_steps` aggregate I created earlier.
+
+I'll iterate over the missing values setting them to the corresponding mean from interval steps then create a new variable called `actvt_filled`.
+
+```{r}
+
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
